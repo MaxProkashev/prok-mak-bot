@@ -9,14 +9,17 @@ import (
 )
 
 func main() {
+	// get port heroku env
 	port := os.Getenv("PORT")
-
 	if port == "" {
-		log.Fatal("$PORT must be set")
+		log.Fatal("[X] $PORT must be set")
+	} else {
+		log.Printf("[OK] Get PORT = %s", port)
 	}
-	log.Println(port)
 
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
+	router.Use(gin.Recovery())
 	router.Use(gin.Logger())
 
 	router.Run(":" + port)
