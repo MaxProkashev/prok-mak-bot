@@ -11,8 +11,6 @@ import (
 	_ "github.com/heroku/x/hmetrics/onload"
 )
 
-var bot *tgbotapi.BotAPI
-
 func main() {
 	// get port heroku env
 	port := os.Getenv("PORT")
@@ -68,7 +66,5 @@ func webhookHandler(c *gin.Context) {
 		return
 	}
 
-	log.Println(update.Message.Chat.ID)
-
-	bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "ПРИВЕТ"))
+	log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 }
