@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -17,9 +19,6 @@ func main() {
 	} else {
 		log.Printf("[OK] Get PORT = %s", port)
 	}
-	// run gin router
-	gin.SetMode(gin.ReleaseMode)
-	router := gin.New()
 
 	// birth of a bot
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TOKEN"))
@@ -28,16 +27,41 @@ func main() {
 		return
 	}
 
-	// communication with the server
-	url := os.Getenv("COMMUNICATION_URL") + bot.Token
-	_, err = bot.SetWebhook(tgbotapi.NewWebhook(url))
+	// set webhook
+	_, err = bot.SetWebhook(tgbotapi.NewWebhook(os.Getenv("COMMUNICATION_URL") + bot.Token))
 	if err != nil {
 		log.Fatalf("[X] Could not set webhook to bot settings. Reason: %s", err.Error())
+		return
 	}
+
+	// run gin router
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
+	router.Use(gin.Recovery())
+
+	router.POST("/"+bot.Token, webhookHandler)
 
 	// run router
 	err = router.Run(":" + port)
 	if err != nil {
 		log.Fatalf("[X] Could not run router. Reason: %s", err.Error())
 	}
+}
+
+func webhookHandler(c *gin.Context) {
+	defer c.Request.Body.Close()
+
+	// read request
+	bytes, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		log.Fatalf("[X] Could not read request. Reason: %s", err.Error())
+		return
+	}
+	var update tgbotapi.Update
+	err = json.Unmarshal(bytes, &update)
+	if err != nil {
+		log.Fatalf("[X] Could not unmarshal updates. Reason: %s", err.Error())
+		return
+	}
+	log.Println(update)
 }
