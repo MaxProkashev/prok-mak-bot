@@ -1,8 +1,7 @@
 {
   "name": "PROK BOT",
-  "description": "prok_mak_bot tg-api",
+  "description": "prok-mak-bot tg-api",
   "keywords": [
-    "getting-started",
     "go"
   ],
   "website": "http://github.com/heroku/prok-mak-bot",
