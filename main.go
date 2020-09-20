@@ -68,5 +68,7 @@ func webhookHandler(c *gin.Context) {
 		return
 	}
 
+	log.Println(update.Message.Chat.ID)
+
 	bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "ПРИВЕТ"))
 }
