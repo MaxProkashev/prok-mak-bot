@@ -35,8 +35,6 @@ func main() {
 		log.Fatalf("[X] Could not set webhook to bot settings. Reason: %s", err.Error())
 	}
 
-	router.POST("/" + bot.Token)
-
 	// run router
 	err = router.Run(":" + port)
 	if err != nil {
