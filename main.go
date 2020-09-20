@@ -51,17 +51,20 @@ func main() {
 func webhookHandler(c *gin.Context) {
 	defer c.Request.Body.Close()
 
-	// read request
+	// Чтение запроса
 	bytes, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		log.Fatalf("[X] Could not read request. Reason: %s", err.Error())
 		return
 	}
+
+	// Update
 	var update tgbotapi.Update
 	err = json.Unmarshal(bytes, &update)
 	if err != nil {
 		log.Fatalf("[X] Could not unmarshal updates. Reason: %s", err.Error())
 		return
 	}
-	log.Println(update)
+
+	tgbotapi.NewMessage(update.Message.Chat.ID, "ПРИВЕТ")
 }
