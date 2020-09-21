@@ -30,12 +30,13 @@ func main() {
 	router.Use(gin.Recovery())
 
 	// create db postresql
-	_, err := dbfunc.OpenDB()
+	db, err := dbfunc.OpenDB()
 	if err != nil {
 		log.Fatalf("[X] Could not connect to DB. Reason: %s", err.Error())
 	} else {
 		log.Printf("[OK] Connect to DB")
 	}
+	dbfunc.CreateTable(db)
 
 	// create bot
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TOKEN"))
@@ -67,7 +68,7 @@ func main() {
 		}
 
 		hook := logic.ParseUpdate(update)
-		log.Println(hook)
+		dbfunc.NewID(db, hook.GetUserID())
 	})
 
 	// run gin router

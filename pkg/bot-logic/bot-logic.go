@@ -13,8 +13,11 @@ type HookConfig struct {
 	hasText     bool // is there any text
 	hasPhoto    bool // is there any photo
 	hasCallback bool // is there any callback
+}
 
-	inTable bool // is there a user in the table
+// GetUserID - return int user id
+func (hook HookConfig) GetUserID() int {
+	return hook.userID
 }
 
 // ParseUpdate - get main info about req
