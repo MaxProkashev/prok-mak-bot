@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	logic "prok-mak-bot/pkg/bot-logic"
+	dbfunc "prok-mak-bot/pkg/db-func"
 
 	"github.com/gin-gonic/gin"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -25,6 +26,15 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Recovery())
+
+	// create db postresql
+	_, err := dbfunc.OpenDB()
+	if err != nil {
+		log.Fatalf("[X] Could not connect to DB. Reason: %s", err.Error())
+	} else {
+		log.Printf("[OK] Connect to DB")
+	}
+
 
 	// create bot
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TOKEN"))

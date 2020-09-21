@@ -29,9 +29,9 @@ func ParseUpdate(update tgbotapi.Update) (hook HookConfig) {
 		return hook
 	} else if update.Message != nil {
 		hook = HookConfig{
-			updateID:    update.UpdateID,
-			chatID: update.Message.Chat.ID,
-			userID: update.Message.From.ID,
+			updateID: update.UpdateID,
+			chatID:   update.Message.Chat.ID,
+			userID:   update.Message.From.ID,
 		}
 		if update.Message.Photo != nil {
 			hook.hasPhoto = true
