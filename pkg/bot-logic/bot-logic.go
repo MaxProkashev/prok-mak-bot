@@ -19,15 +19,9 @@ type HookConfig struct {
 
 // ParseUpdate - get main info about req
 func ParseUpdate(update tgbotapi.Update) (hook HookConfig) {
-	hook = HookConfig{
-		updateID:    update.UpdateID,
-		hasCallback: false,
-		hasPhoto:    false,
-		hasText:     false,
-	}
-
 	if update.CallbackQuery != nil {
 		hook = HookConfig{
+			updateID:    update.UpdateID,
 			hasCallback: true,
 			chatID:      update.CallbackQuery.Message.Chat.ID,
 			userID:      update.CallbackQuery.From.ID,
@@ -35,6 +29,7 @@ func ParseUpdate(update tgbotapi.Update) (hook HookConfig) {
 		return hook
 	} else if update.Message != nil {
 		hook = HookConfig{
+			updateID:    update.UpdateID,
 			chatID: update.Message.Chat.ID,
 			userID: update.Message.From.ID,
 		}
@@ -46,6 +41,7 @@ func ParseUpdate(update tgbotapi.Update) (hook HookConfig) {
 		return hook
 	}
 
+	hook.updateID = update.UpdateID
 	hook.chatID = update.Message.Chat.ID
 	hook.userID = update.Message.From.ID
 	return hook
