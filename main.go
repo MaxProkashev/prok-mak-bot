@@ -67,11 +67,11 @@ func main() {
 			log.Fatalf("[X] Could not unmarshal updates. Reason: %s", err.Error())
 		}
 
-		hook := logic.ParseUpdate(update)
-		if dbfunc.CheckUserID(db, hook.GetUserID()) {
-			bot.Send(tgbotapi.NewMessage(hook.GetChatID(), "Вы в базе"))
+		hook := logic.ParseUpdate(db, update)
+		if hook.InTable {
+			bot.Send(tgbotapi.NewMessage(hook.ChatID, update.Message.From.UserName))
 		} else {
-			bot.Send(tgbotapi.NewMessage(hook.GetChatID(), "Вы не в базе"))
+			bot.Send(tgbotapi.NewMessage(hook.ChatID, "Вы внесены в таблицу"))
 		}
 	})
 
