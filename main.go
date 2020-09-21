@@ -5,11 +5,13 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+
 	logic "prok-mak-bot/pkg/bot-logic"
 	dbfunc "prok-mak-bot/pkg/db-func"
 
 	"github.com/gin-gonic/gin"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+
 	_ "github.com/heroku/x/hmetrics/onload"
 )
 
@@ -34,7 +36,6 @@ func main() {
 	} else {
 		log.Printf("[OK] Connect to DB")
 	}
-
 
 	// create bot
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TOKEN"))
