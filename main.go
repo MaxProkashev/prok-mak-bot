@@ -1,13 +1,15 @@
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"os"
+	logic "prok-mak-bot/pkg/bot-logic"
 
 	"github.com/gin-gonic/gin"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	_ "github.com/heroku/x/hmetrics/onload"
-
-	"prok-mak-bot/pkg/handler"
 )
 
 func main() {
@@ -19,24 +21,45 @@ func main() {
 		log.Printf("[OK] Get PORT = %s", port)
 	}
 
-	// run gin router
+	// customize gin router
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Recovery())
 
 	// create bot
-	bot, err := handler.CreateBot()
+	bot, err := tgbotapi.NewBotAPI(os.Getenv("TOKEN"))
 	if err != nil {
-		log.Fatal("[X] Could not create bot")
+		log.Fatalf("[X] Could not create bot. Reason: %s", err.Error())
 	}
 
+	// set webhook
+	_, err = bot.SetWebhook(tgbotapi.NewWebhook(os.Getenv("COMMUNICATION_URL") + os.Getenv("TOKEN")))
+	if err != nil {
+		log.Fatalf("[X] Could not set webhook to bot settings. Reason: %s", err.Error())
+	}
+
+	// processing request
 	router.POST("/"+os.Getenv("TOKEN"), func(c *gin.Context) {
-		log.Println(c)
-		log.Println(bot)
-		handler.WebhookHandler(c, bot)
+		defer c.Request.Body.Close()
+
+		// read request body
+		bytes, err := ioutil.ReadAll(c.Request.Body)
+		if err != nil {
+			log.Fatalf("[X] Could not read request. Reason: %s", err.Error())
+		}
+
+		// unmarshal update
+		var update tgbotapi.Update
+		err = json.Unmarshal(bytes, &update)
+		if err != nil {
+			log.Fatalf("[X] Could not unmarshal updates. Reason: %s", err.Error())
+		}
+
+		hook := logic.ParseUpdate(update)
+		log.Println(hook)
 	})
 
-	// run router
+	// run gin router
 	err = router.Run(":" + port)
 	if err != nil {
 		log.Fatalf("[X] Could not run router. Reason: %s", err.Error())
