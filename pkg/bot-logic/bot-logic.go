@@ -20,6 +20,11 @@ func (hook HookConfig) GetUserID() int {
 	return hook.userID
 }
 
+// GetChatID - return int user id
+func (hook HookConfig) GetChatID() int64 {
+	return hook.chatID
+}
+
 // ParseUpdate - get main info about req
 func ParseUpdate(update tgbotapi.Update) (hook HookConfig) {
 	if update.CallbackQuery != nil {

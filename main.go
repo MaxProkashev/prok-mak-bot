@@ -68,7 +68,11 @@ func main() {
 		}
 
 		hook := logic.ParseUpdate(update)
-		dbfunc.NewID(db, hook.GetUserID())
+		if dbfunc.CheckUserID(db, hook.GetUserID()) {
+			bot.Send(tgbotapi.NewMessage(hook.GetChatID(), "Вы в базе"))
+		} else {
+			bot.Send(tgbotapi.NewMessage(hook.GetChatID(), "Вы не в базе"))
+		}
 	})
 
 	// run gin router
